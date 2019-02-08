@@ -414,7 +414,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -427,7 +427,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -440,7 +440,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                         <pluginExecution>
@@ -453,7 +453,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                                                 </goals>
                                             </pluginExecutionFilter>
                                             <action>
-                                                <ignore />
+                                                <ignore/>
                                             </action>
                                         </pluginExecution>
                                     </pluginExecutions>
@@ -484,7 +484,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                                     <executable>java</executable>
                                     <arguments>
                                         <argument>-classpath</argument>
-                                        <classpath />
+                                        <classpath/>
                                         <argument>io.vavr.JmhRunner</argument>
                                     </arguments>
                                 </configuration>
@@ -509,3 +509,4 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         </profile>
     </profiles>
 </project>
+
