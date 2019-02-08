@@ -18,6 +18,7 @@ cache:
   - $HOME/apache-maven-3.5.4
   - $HOME/CACHE
   - $HOME/CACHE
+  - $HOME/CACHE
 dist: trusty
 env:
   CACHE_MARK: '1'
@@ -35,8 +36,10 @@ matrix:
   - env:
     - CACHE_MARK=2
     - CACHE_MARK=2
+    - CACHE_MARK=2
     jdk: oraclejdk8
     script:
+    - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
     - mvn test -B
@@ -44,10 +47,15 @@ matrix:
       -name TEST-*.xml -newer /tmp/NOW | wc -l))
     - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
       -name TEST-*.xml -newer /tmp/NOW | wc -l))
+    - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
+      -name TEST-*.xml -newer /tmp/NOW | wc -l))
 script:
 - touch /tmp/NOW;echo SCRIPT_START $(date)
 - touch /tmp/NOW;echo SCRIPT_START $(date)
+- touch /tmp/NOW;echo SCRIPT_START $(date)
 - .travis/run-tests.sh
+- echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
+  -name TEST-*.xml -newer /tmp/NOW | wc -l))
 - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
   -name TEST-*.xml -newer /tmp/NOW | wc -l))
 - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
