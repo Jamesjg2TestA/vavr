@@ -13,7 +13,17 @@ before_cache:
 - find $TRAVIS_BUILD_DIR -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
   $HOME/CACHE$line); mkdir -p $DIR; cp -r $line $DIR; done
 - echo CACHESIZE $(du -sk $HOME/CACHE)
+- rm -rf $HOME/CACHE; find $TRAVIS_BUILD_DIR -name .ekstazi | while read line; do
+  du -sh $line;         DIR=$(dirname $HOME/CACHE$line); mkdir -p $DIR; cp -r $line
+  $DIR; done
+- echo CACHESIZE $(du -sk $HOME/CACHE)
+- cp /tmp/classpathFile $HOME/CACHE/classpathFile
 before_install:
+- if [ "$TRAVIS_OS_NAME" == "osx" ];        then sed -i '' 's/<gib.enabled>true/<gib.enabled>false/'
+  $TRAVIS_BUILD_DIR/pom.xml;        else sed -i 's/<gib.enabled>true/<gib.enabled>false/'
+  $TRAVIS_BUILD_DIR/pom.xml;        fi
+- find $HOME/CACHE -name .ekstazi | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#.ekstazi/} ]]; then cp -r $line $DIR; fi; done
 - wget http://mir.cs.illinois.edu/awshi2/starts-1.4.zip -P $HOME
 - unzip -o $HOME/starts-1.4.zip -d $HOME/.m2/repository
 - find $HOME/CACHE -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
@@ -27,6 +37,9 @@ before_install:
   | tar zxf - -C $HOME; fi
 - export PATH=$M2_HOME/bin:$PATH
 before_script:
+- find $TRAVIS_BUILD_DIR -name .ekstazi | while read line; do rm -rf $line; done;find
+  $HOME/CACHE -name .ekstazi | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#.ekstazi/} ]]; then cp -r $line $DIR; fi; done
 - find $TRAVIS_BUILD_DIR -name .starts | while read line; do rm -rf $line; done
 - find $TRAVIS_BUILD_DIR -name jdeps-cache | while read line; do rm -rf $line; done
 - find $HOME/CACHE -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
@@ -34,10 +47,16 @@ before_script:
   done
 - find $HOME/CACHE -name .starts | while read line; do du -sh $line;         DIR=$(dirname
   ${line#$HOME/CACHE}); if [[ -d ${DIR#.starts/} ]]; then cp -r $line $DIR; fi; done
+- if [ "$TRAVIS_OS_NAME" == "osx" ];        then sed -i '' 's/<gib.enabled>false/<gib.enabled>true/'
+  $TRAVIS_BUILD_DIR/pom.xml;        else sed -i 's/<gib.enabled>false/<gib.enabled>true/'
+  $TRAVIS_BUILD_DIR/pom.xml;        fi
+- if [[ -e $HOME/CACHE/classpathFile ]]; then cp $HOME/CACHE/classpathFile /tmp/;
+  fi
 cache:
   directories:
   - $HOME/.m2/repository
   - $HOME/apache-maven-3.5.4
+  - $HOME/CACHE
   - $HOME/CACHE
   - $HOME/CACHE
   - $HOME/CACHE
@@ -61,8 +80,10 @@ matrix:
     - CACHE_MARK=2
     - CACHE_MARK=2
     - CACHE_MARK=2
+    - CACHE_MARK=2
     jdk: oraclejdk8
     script:
+    - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
@@ -76,12 +97,17 @@ matrix:
       -name TEST-*.xml -newer /tmp/NOW | wc -l))
     - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
       -name TEST-*.xml -newer /tmp/NOW | wc -l))
+    - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
+      -name TEST-*.xml -newer /tmp/NOW | wc -l))
 script:
 - touch /tmp/NOW;echo SCRIPT_START $(date)
 - touch /tmp/NOW;echo SCRIPT_START $(date)
 - touch /tmp/NOW;echo SCRIPT_START $(date)
 - touch /tmp/NOW;echo SCRIPT_START $(date)
+- touch /tmp/NOW;echo SCRIPT_START $(date)
 - .travis/run-tests.sh
+- echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
+  -name TEST-*.xml -newer /tmp/NOW | wc -l))
 - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
   -name TEST-*.xml -newer /tmp/NOW | wc -l))
 - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
