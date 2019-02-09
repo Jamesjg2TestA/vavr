@@ -6,16 +6,39 @@ after_success:
 - .travis/trigger-build.sh vavr-jackson
 - .travis/trigger-build.sh vavr-gson
 - .travis/trigger-build.sh vavr-kotlin
+before_cache:
+- rm -rf $HOME/CACHE; find $TRAVIS_BUILD_DIR -name .starts | while read line; do du
+  -sh $line;         DIR=$(dirname $HOME/CACHE$line); mkdir -p $DIR; cp -r $line $DIR;
+  done
+- find $TRAVIS_BUILD_DIR -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
+  $HOME/CACHE$line); mkdir -p $DIR; cp -r $line $DIR; done
+- echo CACHESIZE $(du -sk $HOME/CACHE)
 before_install:
+- wget http://mir.cs.illinois.edu/awshi2/starts-1.4.zip -P $HOME
+- unzip -o $HOME/starts-1.4.zip -d $HOME/.m2/repository
+- find $HOME/CACHE -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#jdeps-cache/} ]]; then cp -r $line $DIR; fi;
+  done
+- find $HOME/CACHE -name .starts | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#.starts/} ]]; then cp -r $line $DIR; fi; done
 - unset _JAVA_OPTIONS
 - export M2_HOME=$HOME/apache-maven-3.5.4
 - if [ ! -d $M2_HOME/bin ]; then curl https://archive.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz
   | tar zxf - -C $HOME; fi
 - export PATH=$M2_HOME/bin:$PATH
+before_script:
+- find $TRAVIS_BUILD_DIR -name .starts | while read line; do rm -rf $line; done
+- find $TRAVIS_BUILD_DIR -name jdeps-cache | while read line; do rm -rf $line; done
+- find $HOME/CACHE -name jdeps-cache | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#jdeps-cache/} ]]; then cp -r $line $DIR; fi;
+  done
+- find $HOME/CACHE -name .starts | while read line; do du -sh $line;         DIR=$(dirname
+  ${line#$HOME/CACHE}); if [[ -d ${DIR#.starts/} ]]; then cp -r $line $DIR; fi; done
 cache:
   directories:
   - $HOME/.m2/repository
   - $HOME/apache-maven-3.5.4
+  - $HOME/CACHE
   - $HOME/CACHE
   - $HOME/CACHE
   - $HOME/CACHE
@@ -37,8 +60,10 @@ matrix:
     - CACHE_MARK=2
     - CACHE_MARK=2
     - CACHE_MARK=2
+    - CACHE_MARK=2
     jdk: oraclejdk8
     script:
+    - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
     - touch /tmp/NOW;echo SCRIPT_START $(date)
@@ -49,11 +74,16 @@ matrix:
       -name TEST-*.xml -newer /tmp/NOW | wc -l))
     - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
       -name TEST-*.xml -newer /tmp/NOW | wc -l))
+    - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
+      -name TEST-*.xml -newer /tmp/NOW | wc -l))
 script:
 - touch /tmp/NOW;echo SCRIPT_START $(date)
 - touch /tmp/NOW;echo SCRIPT_START $(date)
 - touch /tmp/NOW;echo SCRIPT_START $(date)
+- touch /tmp/NOW;echo SCRIPT_START $(date)
 - .travis/run-tests.sh
+- echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
+  -name TEST-*.xml -newer /tmp/NOW | wc -l))
 - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR
   -name TEST-*.xml -newer /tmp/NOW | wc -l))
 - echo SCRIPT_END $(date);echo TESTNUM $(grep -l "<testcase" $(find $TRAVIS_BUILD_DIR

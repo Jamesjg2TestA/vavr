@@ -137,6 +137,20 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                 <artifactId>maven-install-plugin</artifactId>
                 <version>${maven.install.version}</version>
             </plugin>
+        <plugin>
+                <groupId>edu.illinois</groupId>
+                <artifactId>starts-maven-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <id>starts</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>starts</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
